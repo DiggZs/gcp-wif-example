@@ -1,0 +1,84 @@
+name: "Terraform"
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+env:
+  PROJECT_NUMBER: "244000224642"
+  PROJECT_ID: "gg-flutter-app-dev"
+  GCS_BUCKET: "gg-flutter-app-dev-terraform"
+  TERRAFORM_VERSION: "1.7.4"
+
+jobs:
+  terraform-plan:
+    name: "Terraform Plan"
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: 'Set up Workload Identity'
+        id: auth
+        uses: 'google-github-actions/auth@v2'
+        with:
+            create_credentials_file: 'true'
+            workload_identity_provider: 'projects/${{ env.PROJECT_NUMBER }}/locations/global/workloadIdentityPools/github/providers/github'
+            service_account: 'terraform@${{ env.PROJECT_ID }}.iam.gserviceaccount.com'
+
+      # Install the selected version of Terraform CLI 
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+
+      - name: Terraform Init
+        id: init
+        env:
+          GCS_BUCKET: ${{ env.GCS_BUCKET }}
+        run: terraform init -backend-config="bucket=$GCS_BUCKET" -backend-config="prefix=terraform/${{ github.event.repository.name }}/"
+
+      - name: Terraform Plan
+        id: plan
+        run: terraform plan -var-file="environments/dev.tfvars"
+  terraform-apply:
+    if: ${{ github.ref == 'refs/heads/main' }}  # Only run if the Terraform Plan job succeeded
+    name: "Terraform Apply"
+    runs-on: ubuntu-latest
+    needs:
+      - terraform-plan
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: 'Set up Workload Identity'
+        id: auth
+        uses: 'google-github-actions/auth@v2'
+        with:
+            create_credentials_file: 'true'
+            workload_identity_provider: 'projects/${{ env.PROJECT_NUMBER }}/locations/global/workloadIdentityPools/github/providers/github'
+            service_account: 'terraform@${{ env.PROJECT_ID }}.iam.gserviceaccount.com'
+
+      # Install the selected version of Terraform CLI 
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+
+      - name: Terraform Init
+        id: init
+        env:
+          GCS_BUCKET: ${{ env.GCS_BUCKET }}
+        run: terraform init -backend-config="bucket=$GCS_BUCKET" -backend-config="prefix=terraform/${{ github.event.repository.name }}/"
+      
+      - name: Terraform Apply
+        id: apply
+        run: terraform apply -var-file="environments/dev.tfvars" -auto-approve

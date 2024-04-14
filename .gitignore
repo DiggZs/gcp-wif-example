@@ -1,0 +1,12 @@
+*.keyfile**
+*.key**
+
+# Ignore generated credentials from google-github-actions/auth
+gha-creds-*.json
+
+# Ignore Terraform
+.terraform/**
+*.terraform.**
+*.zip
+*.tfstate
+provider_override.tf
