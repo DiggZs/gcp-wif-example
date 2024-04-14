@@ -11,6 +11,7 @@ env:
   PROJECT_ID: "gg-flutter-app-dev"
   GCS_BUCKET: "gg-flutter-app-dev-terraform"
   TERRAFORM_VERSION: "1.7.4"
+  WIF: github-1
 
 jobs:
   terraform-plan:
@@ -28,7 +29,7 @@ jobs:
         uses: 'google-github-actions/auth@v2'
         with:
             create_credentials_file: 'true'
-            workload_identity_provider: 'projects/${{ env.PROJECT_NUMBER }}/locations/global/workloadIdentityPools/github/providers/github'
+            workload_identity_provider: 'projects/${{ env.PROJECT_NUMBER }}/locations/global/workloadIdentityPools/${{ env.WIF }}/providers/${{ env.WIF }}'
             service_account: 'terraform@${{ env.PROJECT_ID }}.iam.gserviceaccount.com'
 
       # Install the selected version of Terraform CLI 
@@ -64,7 +65,7 @@ jobs:
         uses: 'google-github-actions/auth@v2'
         with:
             create_credentials_file: 'true'
-            workload_identity_provider: 'projects/${{ env.PROJECT_NUMBER }}/locations/global/workloadIdentityPools/github/providers/github'
+            workload_identity_provider: 'projects/${{ env.PROJECT_NUMBER }}/locations/global/workloadIdentityPools/${{ env.WIF }}/providers/${{ env.WIF }}'
             service_account: 'terraform@${{ env.PROJECT_ID }}.iam.gserviceaccount.com'
 
       # Install the selected version of Terraform CLI 

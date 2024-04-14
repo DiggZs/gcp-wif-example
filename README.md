@@ -2,26 +2,31 @@
 
 ## Bootstrap
 
-Export env variables
+![Diagram of google WIF with Github](./.googlecloud/diagram.png)
+
+#### Export env variables
 
 ```bash
 export PROJECT_ID="gg-flutter-app-dev" \
 export PROJECT_NUMBER="244000224642" \
 export REGION="us-central1" \
-export WIF="github" \
+export WIF="github-1" \
 export REPO="DiggZs/gcp-wif-example"
 ```
 
-Authenticate with the gcloud CLI
+#### Authenticate with the gcloud CLI
 
 ```bash
 gcloud auth login
 gcloud config set project ${PROJECT_ID}
 ```
 
-Make bootstrap file executable `chmod u+x .googlecloud/bootstrap.sh`
+#### Bootstrap
 
-run [bootstrap](./.googlecloud/bootstrap.sh)
+```bash
+chmod u+x .googlecloud/bootstrap.sh
+./.googlecloud/bootstrap.sh
+```
 
 
 ## Local Development
