@@ -11,7 +11,7 @@ env:
   PROJECT_ID: "gg-flutter-app-dev"
   GCS_BUCKET: "gg-flutter-app-dev-terraform"
   TERRAFORM_VERSION: "1.7.4"
-  WIF: github-1
+  WIF: github-2
 
 jobs:
   terraform-plan:
